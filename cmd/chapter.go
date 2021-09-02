@@ -28,8 +28,11 @@ var chapterCmd = &cobra.Command{
 	Use:   "chapter",
 	Short: "Download a chapter",
 	Long: `This command is used to download a single chapter.
+
 It takes chapter id or url as input, the downloaded pages are named
-with format "page_xx" and image extension will be automatically deduced.`,
+with format "page_xx" and image extension will be automatically deduced.
+Chapter can be downloaded to a folder, or compressed in an archive. See
+the flags for detail.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		input, _ := cmd.Flags().GetString("input")
 		raw, _ := cmd.Flags().GetBool("raw")
@@ -63,20 +66,13 @@ with format "page_xx" and image extension will be automatically deduced.`,
 func init() {
 	rootCmd.AddCommand(chapterCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// chapterCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
 	chapterCmd.Flags().StringP("input", "i", "", "chapter id or url")
 	chapterCmd.Flags().BoolP("zip", "z", false, "archive the downloaded files")
 	chapterCmd.Flags().StringP("output", "o", ".", "output path, unexisting parent folders will be created.")
 	chapterCmd.Flags().BoolP("raw", "r", false, `by default compressed images are downloaded to save data, 
 turn on this flag to download original quality images`)
 	chapterCmd.MarkFlagRequired("input")
+	chapterCmd.MarkFlagDirname("output")
 
 	chapterCmd.Example = `mdgo chapter -i abc-dxy-zhtkfj-skfk -z -o manga/chapter.cbz`
 }
