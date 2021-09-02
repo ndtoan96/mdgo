@@ -26,7 +26,7 @@ import (
 // chapterCmd represents the chapter command
 var chapterCmd = &cobra.Command{
 	Use:   "chapter",
-	Short: "Download a chapter",
+	Short: "Download a single chapter",
 	Long: `This command is used to download a single chapter.
 
 It takes chapter id or url as input, the downloaded pages are named

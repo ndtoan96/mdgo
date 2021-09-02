@@ -27,7 +27,7 @@ import (
 // mangaCmd represents the manga command
 var mangaCmd = &cobra.Command{
 	Use:   "manga",
-	Short: "Download chapters from a manga",
+	Short: "Download multiple chapters from a manga",
 	Long: `This command is used to download chapters from a manga.
 	
 It takes manga id or url as input and provides several filters (by default,
