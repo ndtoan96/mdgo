@@ -4,7 +4,7 @@ CLI tool for downloading manga from mangadex
 # Install
 Make sure go is installed on your computer. Open command prompt or terminal, run
 ```
-go install github.com/ndtoan96/mdgo
+go install github.com/ndtoan96/mdgo@latest
 ```
 
 # Usage
