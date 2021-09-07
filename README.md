@@ -1,3 +1,4 @@
+[![Go](https://github.com/ndtoan96/mdgo/actions/workflows/go.yml/badge.svg)](https://github.com/ndtoan96/mdgo/actions/workflows/go.yml)
 # mdgo
 CLI tool for downloading manga from mangadex
 
