@@ -15,5 +15,5 @@ Run `mdgo manga -h` or `mdgo chapter -h` for their respective usage.
 # Example
 To download chapter in range [0, 10] of Kaguya-sama, save in folder `kaguya` with each chapter named `kaguya_chap_<chap-number>`, and zip all of them in "cbz" file, run this command:
 ```
-mdgo manga -i https://mangadex.org/title/37f5cce0-8070-4ada-96e5-fa24b1bd4ff9/kaguya-sama-wa-kokurasetai-tensai-tachi-no-renai-zunousen -o kaguya -p kaguya_chap_ -C="0,10" -a "cbz"
+mdgo manga https://mangadex.org/title/37f5cce0-8070-4ada-96e5-fa24b1bd4ff9/kaguya-sama-wa-kokurasetai-tensai-tachi-no-renai-zunousen kaguya -p kaguya_chap_ -C="0,10" -a "cbz"
 ```
