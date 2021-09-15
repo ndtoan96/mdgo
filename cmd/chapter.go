@@ -25,19 +25,22 @@ import (
 
 // chapterCmd represents the chapter command
 var chapterCmd = &cobra.Command{
-	Use:   "chapter",
-	Short: "Download a single chapter",
+	Use:     "chapter <input> [output]",
+	Aliases: []string{"c"},
+	Short:   "Download a single chapter",
 	Long: `This command is used to download a single chapter.
 
 It takes chapter id or url as input, the downloaded pages are named
 with format "page_xx" and image extension will be automatically deduced.
 Chapter can be downloaded to a folder, or compressed in an archive. See
 the flags for detail.`,
+	Example: `mdgo chapter abc-dxy-zhtkfj-skfk -a "cbz" manga/chapter`,
+	Args:    cobra.RangeArgs(1, 2),
 	Run: func(cmd *cobra.Command, args []string) {
-		input, _ := cmd.Flags().GetString("input")
+		input := cmd.Flags().Arg(0)
+		path := cmd.Flags().Arg(1)
 		raw, _ := cmd.Flags().GetBool("raw")
-		path, _ := cmd.Flags().GetString("output")
-		zip, _ := cmd.Flags().GetBool("zip")
+		archive, _ := cmd.Flags().GetString("archive")
 
 		url_pattern := regexp.MustCompile(`mangadex\.org/chapter/([\w-]+)`)
 		var id string
@@ -51,7 +54,11 @@ the flags for detail.`,
 			fmt.Println(err)
 			return
 		}
-		if zip {
+		if archive != "" {
+			if path == "" || path == "." {
+				path = "chapter"
+			}
+			path += "." + archive
 			err = chapter.DownloadAsZip(!raw, path)
 		} else {
 			err = chapter.Download(!raw, path)
@@ -66,13 +73,13 @@ the flags for detail.`,
 func init() {
 	rootCmd.AddCommand(chapterCmd)
 
-	chapterCmd.Flags().StringP("input", "i", "", "chapter id or url")
-	chapterCmd.Flags().BoolP("zip", "z", false, "archive the downloaded files")
-	chapterCmd.Flags().StringP("output", "o", ".", "output path, unexisting parent folders will be created.")
-	chapterCmd.Flags().BoolP("raw", "r", false, `by default compressed images are downloaded to save data, 
+	chapterCmd.Flags().StringP("archive", "a", "", "Archive the downloaded files")
+	chapterCmd.Flags().BoolP("raw", "r", false, `By default compressed images are downloaded to save data, 
 turn on this flag to download original quality images`)
-	chapterCmd.MarkFlagRequired("input")
-	chapterCmd.MarkFlagDirname("output")
+	chapterCmd.SetHelpTemplate(chapterCmd.HelpTemplate() + fmt.Sprintf(`Args:
+  %-10s Chapter ID or url
+  %-10s Folder (or file name in case --archive is set) to save downloaded chapter, if not set
+  %-10s current folder will be used
 
-	chapterCmd.Example = `mdgo chapter -i abc-dxy-zhtkfj-skfk -z -o manga/chapter.cbz`
+`, "input", "output", ""))
 }
