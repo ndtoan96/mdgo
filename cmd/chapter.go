@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 
 	"github.com/ndtoan96/mgdex"
@@ -51,8 +52,8 @@ the flags for detail.`,
 		}
 		chapter, err := mgdex.GetChapter(id)
 		if err != nil {
-			fmt.Println(err)
-			return
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 		if archive != "" {
 			if path == "" || path == "." {
@@ -64,8 +65,8 @@ the flags for detail.`,
 			err = chapter.Download(!raw, path)
 		}
 		if err != nil {
-			fmt.Println(err)
-			return
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 	},
 }

@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"regexp"
 
@@ -102,10 +103,14 @@ to archive. See the flags for more detail.`,
 				fmt.Println(i+1, "- chapter", chap.GetChapter())
 			}
 		} else {
+			var success bool
 			if archive != "" {
-				chapterList.DownloadAsZip(!raw, filepath.Join(output, prefix), archive)
+				success = chapterList.DownloadAsZip(!raw, filepath.Join(output, prefix), archive)
 			} else {
-				chapterList.Download(!raw, filepath.Join(output, prefix))
+				success = chapterList.Download(!raw, filepath.Join(output, prefix))
+			}
+			if !success {
+				os.Exit(1)
 			}
 		}
 	},
