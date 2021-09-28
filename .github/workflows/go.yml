@@ -14,8 +14,11 @@ jobs:
       matrix:
         config:
           - os: ubuntu-latest
+            bin: mdgo
           - os: windows-latest
+            bin: mdgo.exe
           - os: macos-latest
+            bin: mdgo
     steps:
     - uses: actions/checkout@v2
 
@@ -26,6 +29,12 @@ jobs:
 
     - name: Build
       run: go build
+      
+    - name: Upload binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: binary
+        path: ${{matrix.config.os.bin}}
 
     - name: Install
       run: go install
@@ -35,9 +44,3 @@ jobs:
     
     - name: Test chapter
       run: mdgo chapter 7ff854cf-dc17-4fdd-99d4-bc8f5d623b60 -a "cbz" tmp/chapter
-      
-    - name: Upload binary
-      uses: actions/upload-artifact@v2
-      with:
-        name: binary
-        path: ./mdgo*
