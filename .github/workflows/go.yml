@@ -14,11 +14,9 @@ jobs:
       matrix:
         config:
           - os: ubuntu-latest
-            bin: mdgo
           - os: windows-latest
-            bin: mdgo.exe
           - os: macos-latest
-            bin: mdgo
+
     steps:
     - uses: actions/checkout@v2
 
@@ -34,7 +32,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: binary
-        path: ${{matrix.config.os.bin}}
+        path: |
+          mdgo
+          mdgo.exe
 
     - name: Install
       run: go install
