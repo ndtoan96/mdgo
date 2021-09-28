@@ -8,6 +8,8 @@ Make sure go is installed on your computer. Open command prompt or terminal, run
 go install github.com/ndtoan96/mdgo@latest
 ```
 
+Or you can download the pre-built executable file at [releases](https://github.com/ndtoan96/mdgo/releases)
+
 # Usage
 `mdgo` includes two commands, which is `manga` and `chapter`. `manga` is used to download multiple chapters of a manga, while `chapter` is used to download one single chapter.
 Run `mdgo manga -h` or `mdgo chapter -h` for their respective usage.
