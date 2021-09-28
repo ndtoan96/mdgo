@@ -9,13 +9,13 @@ on:
 jobs:
 
   build:
-    runs-on: ${{matrix.config.os}}
+    runs-on: ${{matrix.config.os}}-latest
     strategy:
       matrix:
         config:
-          - os: ubuntu-latest
-          - os: windows-latest
-          - os: macos-latest
+          - os: ubuntu
+          - os: windows
+          - os: macos
 
     steps:
     - uses: actions/checkout@v2
@@ -31,7 +31,7 @@ jobs:
     - name: Upload binary
       uses: actions/upload-artifact@v2
       with:
-        name: binary
+        name: ${{matrix.config.os}}_binary
         path: |
           mdgo
           mdgo.exe
