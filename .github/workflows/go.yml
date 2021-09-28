@@ -35,3 +35,9 @@ jobs:
     
     - name: Test chapter
       run: mdgo chapter 7ff854cf-dc17-4fdd-99d4-bc8f5d623b60 -a "cbz" tmp/chapter
+      
+    - name: Upload binary
+      uses: actions/upload-artifact@v2
+      with:
+        name: binary
+        path: ./mdgo*
