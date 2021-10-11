@@ -51,6 +51,7 @@ to archive. See the flags for more detail.`,
 		archive, _ := cmd.Flags().GetString("archive")
 		noRun, _ := cmd.Flags().GetBool("dry-run")
 		raw, _ := cmd.Flags().GetBool("raw")
+		getAll, _ := cmd.Flags().GetBool("all")
 
 		if len(chapterRange) > 0 && len(chapterRange) != 2 {
 			fmt.Println("chapter-range takes 2 values, found", len(chapterRange))
@@ -78,6 +79,26 @@ to archive. See the flags for more detail.`,
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
+		}
+
+		if getAll {
+			cnt := 1
+			for {
+				query_tmp := mgdex.MangaQuery(id).Language(language).Limit(500).Order("asc").Offset(500 * cnt)
+				if groups != nil {
+					query = query.IncludeScanlationGroup()
+				}
+				manga_tmp, err := query_tmp.GetManga()
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+					os.Exit(1)
+				}
+				if manga_tmp.Length() == 0 {
+					break
+				}
+				manga.Append(manga_tmp)
+				cnt++
+			}
 		}
 
 		filter := manga.Filter()
@@ -134,7 +155,9 @@ according to the order they are listed. Otherwise first version will be taken`)
 	mangaCmd.Flags().StringP("archive", "a", "", `Extension of zip files. If not specified, chapters will not be zipped`)
 	mangaCmd.Flags().BoolP("dry-run", "n", false, "Only print list of chapters, not actually download them")
 	mangaCmd.Flags().BoolP("raw", "r", false, `By default compressed images are downloaded to save data, 
-turn on this flag to download original quality images`)
+	turn on this flag to download original quality images`)
+	mangaCmd.Flags().Bool("all", false, `Try to download all chapters, use this tag when manga has too many chapters
+	and normal mode cannot download them all (can use --dry-run to check first)`)
 	mangaCmd.SetHelpTemplate(mangaCmd.HelpTemplate() + fmt.Sprintf(`Args:
   %-10s Manga ID or url
   %-10s Folder to save downloaded chapters, if not set, current folder will be used
