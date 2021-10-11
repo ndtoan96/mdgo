@@ -76,7 +76,8 @@ to archive. See the flags for more detail.`,
 		}
 		manga, err := query.GetManga()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
 		}
 
 		filter := manga.Filter()
@@ -110,7 +111,7 @@ to archive. See the flags for more detail.`,
 				success = chapterList.Download(!raw, filepath.Join(output, prefix))
 			}
 			if !success {
-				os.Exit(1)
+				os.Exit(2)
 			}
 		}
 	},
