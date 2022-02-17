@@ -25,6 +25,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Return code:
+//	1 - Request error
+//	2 - Download error
+//	3 - Invalid argument
+
 // mangaCmd represents the manga command
 var mangaCmd = &cobra.Command{
 	Use:     "manga <input> [output]",
@@ -52,17 +57,19 @@ to archive. See the flags for more detail.`,
 		noRun, _ := cmd.Flags().GetBool("dry-run")
 		raw, _ := cmd.Flags().GetBool("raw")
 		getAll, _ := cmd.Flags().GetBool("all")
+		lastN, _ := cmd.Flags().GetUint("last")
 
+		// Check arguments validity
 		if len(chapterRange) > 0 && len(chapterRange) != 2 {
 			fmt.Println("chapter-range takes 2 values, found", len(chapterRange))
-			return
+			os.Exit(3)
 		}
-
 		if len(volumeRange) > 0 && len(volumeRange) != 2 {
 			fmt.Println("volume-range takes 2 values, found", len(volumeRange))
-			return
+			os.Exit(3)
 		}
 
+		// Extract manga id from url
 		url_pattern := regexp.MustCompile(`mangadex\.org/title/([\w-]+)`)
 		var id string
 		if m := url_pattern.FindStringSubmatch(input); len(m) == 2 {
@@ -81,6 +88,7 @@ to archive. See the flags for more detail.`,
 			os.Exit(1)
 		}
 
+		// Try to query continously with offset 500 until there's no chapters left
 		if getAll {
 			cnt := 1
 			for {
@@ -101,25 +109,44 @@ to archive. See the flags for more detail.`,
 			}
 		}
 
+		var chapterList mgdex.ChapterList
 		filter := manga.Filter()
-		if len(chapterRange) == 2 {
-			filter = filter.ChapterRange(chapterRange[0], chapterRange[1])
-		}
-		if len(volumeRange) == 2 {
-			filter = filter.VolumeRange(volumeRange[0], volumeRange[1])
-		}
-		if len(chapters) > 0 {
-			filter = filter.Chapters(chapters)
-		}
-		if len(volumes) > 0 {
-			filter = filter.Volumes(volumes)
-		}
 		if len(groups) > 0 {
 			filter.PreferGroups(groups)
 		}
 
-		chapterList := filter.GetChapters()
+		// check if --last/-L argument is used
+		if lastN > 0 {
+			// --last/-L argument cannot be used together with volume and chapter filters
+			if len(chapterRange) > 0 || len(volumeRange) > 0 || len(chapters) > 0 || len(volumes) > 0 {
+				fmt.Println("'--last/-L' argument can not be used together with chapter or volume filters")
+				os.Exit(3)
+			}
+			// Fetch all chapter
+			chapterList = filter.GetChapters()
+			// Get the last N chapter
+			if uint(len(chapterList)) > lastN {
+				chapterList = chapterList[uint(len(chapterList))-lastN:]
+			}
+		} else {
+			// Add argument to the filter
+			if len(chapterRange) == 2 {
+				filter = filter.ChapterRange(chapterRange[0], chapterRange[1])
+			}
+			if len(volumeRange) == 2 {
+				filter = filter.VolumeRange(volumeRange[0], volumeRange[1])
+			}
+			if len(chapters) > 0 {
+				filter = filter.Chapters(chapters)
+			}
+			if len(volumes) > 0 {
+				filter = filter.Volumes(volumes)
+			}
+			chapterList = filter.GetChapters()
+		}
+
 		if noRun {
+			// dry run, print the chapters name
 			fmt.Println("These chapters will be downloaded:")
 			for i, chap := range chapterList {
 				fmt.Println(i+1, "- chapter", chap.GetChapter())
@@ -132,6 +159,7 @@ to archive. See the flags for more detail.`,
 				success = chapterList.Download(!raw, filepath.Join(output, prefix))
 			}
 			if !success {
+				fmt.Println("Download failed!")
 				os.Exit(2)
 			}
 		}
@@ -158,6 +186,7 @@ according to the order they are listed. Otherwise first version will be taken`)
 	turn on this flag to download original quality images`)
 	mangaCmd.Flags().Bool("all", false, `Try to download all chapters, use this tag when manga has too many chapters
 	and normal mode cannot download them all (can use --dry-run to check first)`)
+	mangaCmd.Flags().UintP("last", "L", 0, "Last n chapters to download, cannot be used together with volume and chapter filters")
 	mangaCmd.SetHelpTemplate(mangaCmd.HelpTemplate() + fmt.Sprintf(`Args:
   %-10s Manga ID or url
   %-10s Folder to save downloaded chapters, if not set, current folder will be used
