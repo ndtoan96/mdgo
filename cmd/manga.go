@@ -159,7 +159,7 @@ to archive. See the flags for more detail.`,
 				success = chapterList.Download(!raw, filepath.Join(output, prefix))
 			}
 			if !success {
-				fmt.Println("Download failed!")
+				fmt.Println("Failure in downloading one or more chapters!")
 				os.Exit(2)
 			}
 		}

@@ -19,13 +19,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	MAJOR_VERSION = "0"
+	MINOR_VERSION = "4"
+	PATCH_VERSION = "0"
+)
+
 var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "mdgo",
 	Short: "Downloader for mangadex",
-	Long: `A CLI application that works with mangadex api to download manga and chapter
+	Long: "Version: " + MAJOR_VERSION + "." + MINOR_VERSION + "." + PATCH_VERSION + "\n\n" +
+		`A CLI application that works with mangadex api to download manga and chapter
 in an asynchronous manner.`,
 }
 
