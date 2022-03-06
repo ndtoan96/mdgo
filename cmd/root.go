@@ -21,8 +21,8 @@ import (
 
 const (
 	MAJOR_VERSION = "0"
-	MINOR_VERSION = "4"
-	PATCH_VERSION = "0"
+	MINOR_VERSION = "5"
+	PATCH_VERSION = "1"
 )
 
 var cfgFile string
