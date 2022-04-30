@@ -39,6 +39,9 @@ jobs:
     - name: Install
       run: go install
     
+    - name: Test packages
+      run: go test ./...
+    
     - name: Test manga
       run: mdgo manga https://mangadex.org/title/37f5cce0-8070-4ada-96e5-fa24b1bd4ff9/kaguya-sama-wa-kokurasetai-tensai-tachi-no-renai-zunousen kaguya -p kaguya_chap_ -C="0,5" -a "cbz"
     
