@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/ndtoan96/mgdex/imgdl"
+	"github.com/ndtoan96/mdgo/mgdex/imgdl"
 )
 
 // A ChapterData represents data of chapter gotten from mangadex api. It does not
