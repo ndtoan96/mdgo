@@ -1,7 +1,6 @@
 package mgdex
 
 import (
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -77,14 +76,13 @@ func (filter mangaFilter) PreferGroups(groups []string) *mangaFilter {
 
 // GetChapters returns list of chapter sastified the criterias.
 func (filter mangaFilter) GetChapters() (chapters ChapterList) {
-	chapterMap := make(map[string]*ChapterData)
 	for i, chapter := range filter.manga.Data {
-		// Parsed chapter is stored in a map, if chapter with same name already exists in map,
+		// Parsed chapter is stored in a slice, if chapter with same name already exists end of slice,
 		// compare it with the current parsed chapter by these criteria:
 		// - skip whichever is empty
 		// - skip one with lower priority of scanlation group
-		old_chapter, exist := chapterMap[chapter.GetChapter()]
-		if exist {
+		if len(chapters) > 0 && chapters[len(chapters)-1].GetChapter() == chapter.GetChapter() {
+			old_chapter := chapters[len(chapters)-1]
 			old_empty := old_chapter.GetPages() == 0
 			new_empty := chapter.GetPages() == 0
 			if (old_empty && new_empty) || (!old_empty && !new_empty) {
@@ -92,11 +90,11 @@ func (filter mangaFilter) GetChapters() (chapters ChapterList) {
 					old_group := strings.ToLower(old_chapter.GetScanlationGroup())
 					new_group := strings.ToLower(chapter.GetScanlationGroup())
 					if filter.preferGroups[old_group] < filter.preferGroups[new_group] {
-						chapterMap[chapter.GetChapter()] = &filter.manga.Data[i]
+						chapters[len(chapters)-1] = &filter.manga.Data[i]
 					}
 				}
 			} else if old_empty && !new_empty {
-				chapterMap[chapter.GetChapter()] = &filter.manga.Data[i]
+				chapters[len(chapters)-1] = &filter.manga.Data[i]
 			}
 			continue
 		}
@@ -120,20 +118,9 @@ func (filter mangaFilter) GetChapters() (chapters ChapterList) {
 		}
 		if isGood {
 			// the chapter sastified all criterias, save it in the map
-			chapterMap[chapter.GetChapter()] = &filter.manga.Data[i]
+			chapters = append(chapters, &filter.manga.Data[i])
 		}
 	}
 
-	// convert map to list
-	for _, value := range chapterMap {
-		chapters = append(chapters, value)
-	}
-
-	// sort list by ascending order
-	sort.Slice(chapters, func(i, j int) bool {
-		chapter_i, _ := strconv.ParseFloat(chapters[i].GetChapter(), 64)
-		chapter_j, _ := strconv.ParseFloat(chapters[j].GetChapter(), 64)
-		return chapter_i < chapter_j
-	})
 	return
 }

@@ -104,11 +104,11 @@ func (q mangaQuery) GetManga() (*MangaData, error) {
 
 	resp, err := http.Get(base.String())
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("error getting %v, %v", base, err))
+		return nil, fmt.Errorf("error getting %v, %v", base, err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("error getting %v, %v", base, resp.Status))
+		return nil, fmt.Errorf("error getting %v, %v", base, resp.Status)
 	}
 
 	var manga MangaData

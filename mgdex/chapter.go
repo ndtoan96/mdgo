@@ -45,7 +45,7 @@ func GetChapter(id string) (*ChapterData, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("error getting %v, %v", url, resp.Status))
+		return nil, fmt.Errorf("error getting %v, %v", url, resp.Status)
 	}
 
 	// Deserialize chapter json response to struct
@@ -110,7 +110,7 @@ func (chapter ChapterData) GetPageUrls(dataSaver bool) ([]string, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, errors.New(fmt.Sprintf("error getting %v: %v", serverUrl, resp.Status))
+		return nil, fmt.Errorf("error getting %v: %v", serverUrl, resp.Status)
 	}
 	var server serverData
 	err = json.NewDecoder(resp.Body).Decode(&server)

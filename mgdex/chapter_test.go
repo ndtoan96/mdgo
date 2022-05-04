@@ -1,6 +1,8 @@
 package mgdex
 
-import "testing"
+import (
+	"testing"
+)
 
 func Test_GetChapter_OK(t *testing.T) {
 	chapter, err := GetChapter("7ff854cf-dc17-4fdd-99d4-bc8f5d623b60")
