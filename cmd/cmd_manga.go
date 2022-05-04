@@ -21,7 +21,7 @@ import (
 	"path/filepath"
 	"regexp"
 
-	"github.com/ndtoan96/mdgo/mgdex"
+	"github.com/ndtoan96/mgdex"
 	"github.com/spf13/cobra"
 )
 
