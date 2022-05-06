@@ -20,6 +20,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/ndtoan96/mgdex"
 	"github.com/spf13/cobra"
@@ -71,14 +72,25 @@ to archive. See the flags for more detail.`,
 
 		// Extract manga id from url
 		url_pattern := regexp.MustCompile(`mangadex\.org/title/([\w-]+)`)
-		var id string
+		var mangaId string
 		if m := url_pattern.FindStringSubmatch(input); len(m) == 2 {
-			id = m[1]
+			mangaId = m[1]
 		} else {
-			id = input
+			mangaId = input
 		}
 
-		query := mgdex.MangaQuery(id).Language(language).Limit(500).Order("asc")
+		// Get manga title if prefix contains :m
+		if strings.Contains(prefix, ":m") {
+			mangaInfo, err := mgdex.GetMangaInfo(mangaId)
+			if err == nil {
+				mangaTitle := mangaInfo.GetMainTitle()
+				prefix = strings.ReplaceAll(prefix, ":m", mangaTitle)
+			} else {
+				fmt.Println("Warning: Can't get manga title, skip.")
+			}
+		}
+
+		query := mgdex.MangaQuery(mangaId).Language(language).Limit(500).Order("asc")
 		if groups != nil {
 			query = query.IncludeScanlationGroup()
 		}
@@ -92,7 +104,7 @@ to archive. See the flags for more detail.`,
 		if getAll {
 			cnt := 1
 			for {
-				query_tmp := mgdex.MangaQuery(id).Language(language).Limit(500).Order("asc").Offset(500 * cnt)
+				query_tmp := mgdex.MangaQuery(mangaId).Language(language).Limit(500).Order("asc").Offset(500 * cnt)
 				if groups != nil {
 					query = query.IncludeScanlationGroup()
 				}
